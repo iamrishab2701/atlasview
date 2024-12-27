@@ -37,18 +37,23 @@
 <table>
     <thead>
     <tr>
-        <th>Total Tests</th>
-        <th>Passed</th>
-        <th>Failed</th>
-        <th>Skipped</th>
+        <th>Test Name</th>
+        <th>Status</th>
+        <th>Duration</th>
+        <th>Error (if any)</th>
+        <th>Screenshot</th>
     </tr>
     </thead>
     <tbody>
-    <tr>
-        <td th:text="${summary.totalTests}"></td>
-        <td th:text="${summary.passedTests}" class="pass"></td>
-        <td th:text="${summary.failedTests}" class="fail"></td>
-        <td th:text="${summary.skippedTests}"></td>
+    <tr th:each="test : ${tests}">
+        <td th:text="${test.name}"></td>
+        <td th:text="${test.status}" th:classappend="${test.status == 'FAIL' ? 'fail' : 'pass'}"></td>
+        <td th:text="${test.duration}"></td>
+        <td th:text="${test.error != null ? test.error : 'N/A'}"></td>
+        <td>
+            <a th:if="${test.screenshot != null}" th:href="@{${test.screenshot}}" target="_blank">View Screenshot</a>
+            <span th:if="${test.screenshot == null}">N/A</span>
+        </td>
     </tr>
     </tbody>
 </table>

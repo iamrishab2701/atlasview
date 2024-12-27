@@ -9,7 +9,8 @@
       "name": "Signup Test",
       "status": "FAIL",
       "duration": "8s",
-      "error": "ElementNotFoundException"
+      "error": "ElementNotFoundException",
+      "screenshot": "screenshots/signup_failure.png"
     },
     {
       "name": "Logout Test",

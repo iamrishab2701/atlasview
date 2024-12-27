@@ -46,5 +46,30 @@
             <artifactId>slf4j-simple</artifactId>
             <version>2.0.16</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/com.itextpdf/kernel -->
+        <dependency>
+            <groupId>com.itextpdf</groupId>
+            <artifactId>kernel</artifactId>
+            <version>9.0.0</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.itextpdf/layout -->
+        <dependency>
+            <groupId>com.itextpdf</groupId>
+            <artifactId>layout</artifactId>
+            <version>9.0.0</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.itextpdf/io -->
+        <dependency>
+            <groupId>com.itextpdf</groupId>
+            <artifactId>io</artifactId>
+            <version>9.0.0</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.jfree/jfreechart -->
+        <dependency>
+            <groupId>org.jfree</groupId>
+            <artifactId>jfreechart</artifactId>
+            <version>1.5.5</version>
+        </dependency>
+
     </dependencies>
 </project>
