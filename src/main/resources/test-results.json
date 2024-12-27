@@ -1,0 +1,20 @@
+{
+  "tests": [
+    {
+      "name": "Login Test",
+      "status": "PASS",
+      "duration": "5s"
+    },
+    {
+      "name": "Signup Test",
+      "status": "FAIL",
+      "duration": "8s",
+      "error": "ElementNotFoundException"
+    },
+    {
+      "name": "Logout Test",
+      "status": "PASS",
+      "duration": "2s"
+    }
+  ]
+}

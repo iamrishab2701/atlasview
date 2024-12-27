@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>Test Report</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+        .pass {
+            color: green;
+        }
+        .fail {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+<h1>Test Report</h1>
+<h2>Summary</h2>
+<table>
+    <thead>
+    <tr>
+        <th>Total Tests</th>
+        <th>Passed</th>
+        <th>Failed</th>
+        <th>Skipped</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td th:text="${summary.totalTests}"></td>
+        <td th:text="${summary.passedTests}" class="pass"></td>
+        <td th:text="${summary.failedTests}" class="fail"></td>
+        <td th:text="${summary.skippedTests}"></td>
+    </tr>
+    </tbody>
+</table>
+<h2>Test Results Overview</h2>
+<div style="width: 50%; margin: 0 auto;">
+    <canvas id="testResultsChart"></canvas>
+</div>
+<script>
+    const ctx = document.getElementById('testResultsChart').getContext('2d');
+    const chartData = {
+        labels: ['Passed', 'Failed', 'Skipped'],
+        datasets: [{
+            label: 'Test Results',
+            data: [
+                [[${summary.passedTests}]],
+                [[${summary.failedTests}]],
+                [[${summary.skippedTests}]]
+            ],
+            backgroundColor: [
+                'rgba(75, 192, 192, 0.2)', // Green for Passed
+                'rgba(255, 99, 132, 0.2)', // Red for Failed
+                'rgba(255, 205, 86, 0.2)'  // Yellow for Skipped
+            ],
+            borderColor: [
+                'rgba(75, 192, 192, 1)',
+                'rgba(255, 99, 132, 1)',
+                'rgba(255, 205, 86, 1)'
+            ],
+            borderWidth: 1
+        }]
+    };
+
+    new Chart(ctx, {
+        type: 'pie',
+        data: chartData,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false, // Allow size customization
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                tooltip: {
+                    enabled: true,
+                }
+            },
+            layout: {
+                padding: 10 // Add padding around the chart
+            }
+        }
+    });
+</script>
+<h1>Test Report</h1>
+<table>
+    <thead>
+    <tr>
+        <th>Test Name</th>
+        <th>Status</th>
+        <th>Duration</th>
+        <th>Error (if any)</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="test : ${tests}">
+        <td th:text="${test.name}"></td>
+        <td th:text="${test.status}"
+            th:classappend="${test.status == 'FAIL' ? 'fail' : 'pass'}"></td>
+        <td th:text="${test.duration}"></td>
+        <td th:text="${test.error != null ? test.error : 'N/A'}"></td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>
