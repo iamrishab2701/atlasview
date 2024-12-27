@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <title>Test Report</title>
     <style>
@@ -22,6 +22,13 @@
         }
         th {
             background-color: #f4f4f4;
+            cursor: pointer;
+        }
+        th.sort-asc::after {
+            content: " ▲";
+        }
+        th.sort-desc::after {
+            content: " ▼";
         }
         .pass {
             color: green;
@@ -29,17 +36,41 @@
         .fail {
             color: red;
         }
+        .filter-container {
+            margin-bottom: 20px;
+        }
+        .filter-container select {
+            padding: 5px 10px;
+        }
     </style>
 </head>
 <body>
 <h1>Test Report</h1>
-<h2>Summary</h2>
-<table>
+
+<h2>Test Results Overview</h2>
+<div style="width: 50%; margin: 0 auto;">
+    <canvas id="testResultsChart"></canvas>
+</div>
+
+<!-- Filter Dropdown -->
+<div class="filter-container">
+    <label for="statusFilter">Filter by Status:</label>
+    <select id="statusFilter" onchange="filterTable()">
+        <option value="">All</option>
+        <option value="PASS">Passed</option>
+        <option value="FAIL">Failed</option>
+        <option value="SKIPPED">Skipped</option>
+    </select>
+</div>
+
+<!-- Test Report Table -->
+<h2>Test Report Details</h2>
+<table id="testTable">
     <thead>
     <tr>
-        <th>Test Name</th>
-        <th>Status</th>
-        <th>Duration</th>
+        <th onclick="sortTable(0)">Test Name</th>
+        <th onclick="sortTable(1)">Status</th>
+        <th onclick="sortTable(2)">Duration</th>
         <th>Error (if any)</th>
         <th>Screenshot</th>
     </tr>
@@ -51,17 +82,74 @@
         <td th:text="${test.duration}"></td>
         <td th:text="${test.error != null ? test.error : 'N/A'}"></td>
         <td>
-            <a th:if="${test.screenshot != null}" th:href="@{${test.screenshot}}" target="_blank">View Screenshot</a>
+            <div th:if="${test.screenshot != null}">
+                <button class="toggle-button" onclick="toggleScreenshot(this)">Show Screenshot</button>
+                <div class="screenshot">
+                    <img th:src="@{${test.screenshot}}" alt="Screenshot" style="width: 100px; height: auto;" />
+                </div>
+            </div>
             <span th:if="${test.screenshot == null}">N/A</span>
         </td>
     </tr>
     </tbody>
 </table>
-<h2>Test Results Overview</h2>
-<div style="width: 50%; margin: 0 auto;">
-    <canvas id="testResultsChart"></canvas>
-</div>
+
 <script>
+    // Function to Filter the Table by Status
+    function filterTable() {
+        const filter = document.getElementById("statusFilter").value.toUpperCase();
+        const table = document.getElementById("testTable");
+        const rows = table.getElementsByTagName("tr");
+
+        for (let i = 1; i < rows.length; i++) { // Skip header row
+            const statusCell = rows[i].getElementsByTagName("td")[1];
+            if (statusCell) {
+                const status = statusCell.textContent || statusCell.innerText;
+                rows[i].style.display = status.toUpperCase().indexOf(filter) > -1 || !filter ? "" : "none";
+            }
+        }
+    }
+
+    // Function to Sort the Table Columns
+    function sortTable(columnIndex) {
+        const table = document.getElementById("testTable");
+        const rows = Array.from(table.getElementsByTagName("tr")).slice(1); // Skip header row
+        const isAsc = table.querySelectorAll("th")[columnIndex].classList.toggle("sort-asc");
+
+        rows.sort((a, b) => {
+            const aText = a.getElementsByTagName("td")[columnIndex].textContent.trim();
+            const bText = b.getElementsByTagName("td")[columnIndex].textContent.trim();
+
+            if (!isNaN(aText) && !isNaN(bText)) {
+                return isAsc ? aText - bText : bText - aText;
+            }
+            return isAsc ? aText.localeCompare(bText) : bText.localeCompare(aText);
+        });
+
+        // Remove sorting classes from other columns
+        table.querySelectorAll("th").forEach((th, i) => {
+            if (i !== columnIndex) th.classList.remove("sort-asc", "sort-desc");
+        });
+
+        // Append sorted rows back to the table body
+        const tbody = table.getElementsByTagName("tbody")[0];
+        tbody.innerHTML = "";
+        rows.forEach(row => tbody.appendChild(row));
+    }
+
+    // Function to Toggle Screenshot Visibility
+    function toggleScreenshot(button) {
+        const screenshotDiv = button.nextElementSibling; // Get the next sibling (the screenshot div)
+        if (screenshotDiv.style.display === "none" || screenshotDiv.style.display === "") {
+            screenshotDiv.style.display = "block";
+            button.textContent = "Hide Screenshot";
+        } else {
+            screenshotDiv.style.display = "none";
+            button.textContent = "Show Screenshot";
+        }
+    }
+
+    // Chart.js Pie Chart Configuration
     const ctx = document.getElementById('testResultsChart').getContext('2d');
     const chartData = {
         labels: ['Passed', 'Failed', 'Skipped'],
@@ -73,9 +161,9 @@
                 [[${summary.skippedTests}]]
             ],
             backgroundColor: [
-                'rgba(75, 192, 192, 0.2)', // Green for Passed
-                'rgba(255, 99, 132, 0.2)', // Red for Failed
-                'rgba(255, 205, 86, 0.2)'  // Yellow for Skipped
+                'rgba(75, 192, 192, 0.2)', // Green
+                'rgba(255, 99, 132, 0.2)', // Red
+                'rgba(255, 205, 86, 0.2)'  // Yellow
             ],
             borderColor: [
                 'rgba(75, 192, 192, 1)',
@@ -91,7 +179,7 @@
         data: chartData,
         options: {
             responsive: true,
-            maintainAspectRatio: false, // Allow size customization
+            maintainAspectRatio: false,
             plugins: {
                 legend: {
                     position: 'top',
@@ -101,30 +189,10 @@
                 }
             },
             layout: {
-                padding: 10 // Add padding around the chart
+                padding: 10
             }
         }
     });
 </script>
-<h1>Test Report</h1>
-<table>
-    <thead>
-    <tr>
-        <th>Test Name</th>
-        <th>Status</th>
-        <th>Duration</th>
-        <th>Error (if any)</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="test : ${tests}">
-        <td th:text="${test.name}"></td>
-        <td th:text="${test.status}"
-            th:classappend="${test.status == 'FAIL' ? 'fail' : 'pass'}"></td>
-        <td th:text="${test.duration}"></td>
-        <td th:text="${test.error != null ? test.error : 'N/A'}"></td>
-    </tr>
-    </tbody>
-</table>
 </body>
 </html>

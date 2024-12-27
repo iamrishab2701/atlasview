@@ -16,6 +16,11 @@
       "name": "Logout Test",
       "status": "PASS",
       "duration": "2s"
+    },
+    {
+      "name": "onboarding Test",
+      "status": "SKIPPED",
+      "duration": "2s"
     }
   ]
 }
