@@ -36,6 +36,15 @@
         .fail {
             color: red;
         }
+        .screenshot {
+            display: none; /* Ensure screenshots are hidden by default */
+            margin-top: 10px;
+        }
+        .screenshot img {
+            width: 100px;
+            height: auto;
+            border: 1px solid #ddd;
+        }
         .filter-container {
             margin-bottom: 20px;
         }
@@ -85,7 +94,7 @@
             <div th:if="${test.screenshot != null}">
                 <button class="toggle-button" onclick="toggleScreenshot(this)">Show Screenshot</button>
                 <div class="screenshot">
-                    <img th:src="@{${test.screenshot}}" alt="Screenshot" style="width: 100px; height: auto;" />
+                    <img th:src="@{${test.screenshot}}" alt="Screenshot" />
                 </div>
             </div>
             <span th:if="${test.screenshot == null}">N/A</span>

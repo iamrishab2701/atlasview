@@ -36,6 +36,15 @@
         .fail {
             color: red;
         }
+        .screenshot {
+            display: none; /* Ensure screenshots are hidden by default */
+            margin-top: 10px;
+        }
+        .screenshot img {
+            width: 100px;
+            height: auto;
+            border: 1px solid #ddd;
+        }
         .filter-container {
             margin-bottom: 20px;
         }
@@ -95,7 +104,7 @@
             <div>
                 <button class="toggle-button" onclick="toggleScreenshot(this)">Show Screenshot</button>
                 <div class="screenshot">
-                    <img src="screenshots/signup_failure.png" alt="Screenshot" style="width: 100px; height: auto;" />
+                    <img src="screenshots/signup_failure.png" alt="Screenshot" />
                 </div>
             </div>
             
